@@ -27,9 +27,6 @@ public class IdempotencyEntry {
 
     @Column(name="key_value", nullable = false, unique = true, length = 200)
     private String key;
-    
-//    @Column(name = "key_value", nullable = false)   // <— map it
-//    private String keyValue;
 
     @Column(nullable = false)
     private String paymentRef;

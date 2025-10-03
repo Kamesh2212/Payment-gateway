@@ -19,13 +19,22 @@ public class PaymentConsumer {
 
     @KafkaListener(topics = "payments", groupId = "payment-group")
     public void consume(PaymentEvent event) {
-        log.info("Processing payment: {}", event);
-        boolean approved = Math.random() > 0.2; // demo logic
-        paymentService.markStatus(
-                event.getPaymentRef(),
-                approved ? PaymentStatus.SUCCESS : PaymentStatus.FAILED,
-                approved ? "approved" : "declined"
-        );
-        log.info("Payment {} marked as {}", event.getPaymentRef(), approved ? "SUCCESS" : "FAILED");
+        log.info("Processing payment event: {}", event);
+
+        try {
+            boolean approved = Math.random() > 0.1; // demo approval/decline
+            paymentService.updateStatus(
+                    event.getPaymentRef(),
+                    approved ? PaymentStatus.COMPLETED : PaymentStatus.FAILED,
+                    approved ? "Payment approved" : "Payment declined"
+            );
+
+            log.info("Payment {} updated to {}", event.getPaymentRef(),
+                     approved ? "SUCCESS" : "FAILED");
+
+        } catch (Exception ex) {
+            log.error("Error processing payment {}. Will retry.", event.getPaymentRef(), ex);
+            throw ex; // rethrow → triggers Kafka retry
+        }
     }
 }

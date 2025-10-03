@@ -2,6 +2,7 @@ com\kk\payment_gateway\model\PaymentCreatedEvent.class
 com\kk\payment_gateway\controller\PaymentController.class
 com\kk\payment_gateway\exception\GlobalExceptionHandler.class
 com\kk\payment_gateway\kafka\PaymentProducer.class
+com\kk\payment_gateway\model\RefundRequest.class
 com\kk\payment_gateway\kafka\PaymentConsumer.class
 com\kk\payment_gateway\model\Payment.class
 com\kk\payment_gateway\model\PaymentStatus.class
@@ -12,6 +13,8 @@ com\kk\payment_gateway\PaymentGatewayApplication.class
 com\kk\payment_gateway\model\PaymentEvent.class
 com\kk\payment_gateway\service\IdempotencyService.class
 com\kk\payment_gateway\repository\IdempotencyRepository.class
+com\kk\payment_gateway\service\CancelService.class
+com\kk\payment_gateway\service\RefundService.class
 com\kk\payment_gateway\model\IdempotencyEntry$IdempotencyEntryBuilder.class
 com\kk\payment_gateway\model\CreatePaymentRequest.class
 com\kk\payment_gateway\exception\AlreadyProcessedException.class

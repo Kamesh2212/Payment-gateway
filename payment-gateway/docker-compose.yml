@@ -1,8 +1,7 @@
-version: "3.8"
 
 services:
   postgres:
-    image: postgres:18
+    image: postgres:16
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: abc
@@ -11,6 +10,14 @@ services:
       - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+      # Mount init scripts (Task 2.16)
+      - ./docker/initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d bankdb"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
@@ -25,8 +32,8 @@ services:
     depends_on:
       - zookeeper
     ports:
-      - "9092:9092"   # container listener for other containers (advertised as kafka:9092)
-      - "29092:29092" # host listener for clients on your laptop (advertised as localhost:29092)
+      - "9092:9092"
+      - "29092:29092"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181

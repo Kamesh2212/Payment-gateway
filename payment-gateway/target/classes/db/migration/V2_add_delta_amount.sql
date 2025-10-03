@@ -1,0 +1,83 @@
+---- Add delta_amount to history (safe if already exists)
+--DO $$
+--BEGIN
+--    IF NOT EXISTS (
+--        SELECT 1 FROM information_schema.columns 
+--        WHERE table_name='payment_status_history'
+--          AND column_name='delta_amount'
+--    ) THEN
+--        ALTER TABLE payment_status_history 
+--            ADD COLUMN delta_amount NUMERIC(19,2) NOT NULL DEFAULT 0;
+--    END IF;
+--END$$;
+--
+---- Add index if missing
+--DO $$
+--BEGIN
+--    IF NOT EXISTS (
+--        SELECT 1
+--        FROM pg_class c
+--        JOIN pg_namespace n ON n.oid = c.relnamespace
+--        WHERE c.relname = 'ix_psh_paymentref_changedat'
+--          AND n.nspname = 'public'
+--    ) THEN
+--        CREATE INDEX ix_psh_paymentref_changedat
+--          ON payment_status_history (payment_ref, changed_at);
+--    END IF;
+--END$$;
+--
+---- Add optimistic locking column for Payment entity
+--DO $$
+--BEGIN
+--    IF NOT EXISTS (
+--        SELECT 1 FROM information_schema.columns
+--        WHERE table_name='payments' AND column_name='version'
+--    ) THEN
+--        ALTER TABLE payments
+--            ADD COLUMN version BIGINT NOT NULL DEFAULT 0;
+--    END IF;
+--END$$;
+--
+--
+--
+---- Optional: if you also use @Version on other tables later, add similar blocks.
+--
+---- Payments: add optimistic locking column used by @Version in the Payment entity
+--DO $$
+--BEGIN
+--    IF NOT EXISTS (
+--        SELECT 1 FROM information_schema.columns
+--        WHERE table_name='payments' AND column_name='version'
+--    ) THEN
+--        ALTER TABLE payments
+--            ADD COLUMN version BIGINT NOT NULL DEFAULT 0;
+--    END IF;
+--END$$;
+--
+---- Payment status history: add delta_amount for partial/full refund deltas
+--DO $$
+--BEGIN
+--    IF NOT EXISTS (
+--        SELECT 1 FROM information_schema.columns
+--        WHERE table_name='payment_status_history' AND column_name='delta_amount'
+--    ) THEN
+--        ALTER TABLE payment_status_history
+--            ADD COLUMN delta_amount NUMERIC(19,2) NOT NULL DEFAULT 0;
+--    END IF;
+--END$$;
+--
+---- Helpful index for timelines
+--DO $$
+--BEGIN
+--    IF NOT EXISTS (
+--        SELECT 1
+--        FROM pg_class c
+--        JOIN pg_namespace n ON n.oid = c.relnamespace
+--        WHERE c.relname = 'ix_psh_paymentref_changedat'
+--          AND n.nspname = 'public'
+--    ) THEN
+--        CREATE INDEX ix_psh_paymentref_changedat
+--          ON payment_status_history (payment_ref, changed_at);
+--    END IF;
+--END$$;
+--

@@ -1,7 +1,5 @@
 package com.kk.payment_gateway.model;
 
 public enum PaymentStatus {
-    PENDING,
-    SUCCESS,
-    FAILED
+	PENDING, PROCESSING, COMPLETED, FAILED, CANCELLED, PARTIALLY_REFUNDED, REFUNDED
 }

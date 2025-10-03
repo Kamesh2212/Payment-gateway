@@ -8,5 +8,6 @@ import com.kk.payment_gateway.model.IdempotencyEntry;
 
 public interface IdempotencyRepository extends JpaRepository<IdempotencyEntry, Long> {
     Optional<IdempotencyEntry> findByKey(String key);
+
 }
 
